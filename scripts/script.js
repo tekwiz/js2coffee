@@ -1,15 +1,36 @@
-(function($) {
-  /*$('a[href^=#]').live('click', function() {
-    var href = $(this).attr('href');
+sample = "" +
+  "(function ($) {\n" +
+  "  $.fn.highlight = function () {\n" +
+  "    $(this).css({ color: 'red', background: 'yellow' });\n" +
+  "    $(this).fadeIn();\n" +
+  "  };\n" +
+  "})(jQuery);";
 
-    // Activate the link
-    $('a[href^=#]').removeClass('active');
-    $('a[href='+href+']').addClass('active');
+$(function() {
+  var $editor = $("#editor");
+  var $output = $("#output");
 
-    // Activate the section
-    $('section.code').hide();
-    $(href).show();
+  $editor.live('keydown', function() {
+    var self = this;
+    window.setTimeout(function() {
+      onChange.apply(self);
+    }, 50);
+  });
 
-    return false;
-  });*/
-})(jQuery);
+  function onChange() {
+    var input = $(this).val();
+
+    try {
+      var out = Js2coffee.build(input);
+      $("#error").hide();
+      $output.val(out);
+    }
+    catch (e) {
+      $("#error").html(e.toString());;
+      $("#error").show();
+    }
+  };
+
+  $editor.val(sample);
+  onChange.apply($editor);
+});
