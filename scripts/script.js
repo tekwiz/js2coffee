@@ -1,4 +1,4 @@
-sample = "" +
+sample = "/* Type here! */\n\n" +
   "(function ($) {\n" +
   "  $.fn.highlight = function () {\n" +
   "    $(this).css({ color: 'red', background: 'yellow' });\n" +
