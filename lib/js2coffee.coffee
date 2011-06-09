@@ -35,6 +35,7 @@ Node   = parser.Node
 
 buildCoffee = (str) ->
   scriptNode = parser.parse("#{str}\n")
+  trans scriptNode
 
   trim build(scriptNode)
 
@@ -46,6 +47,8 @@ buildCoffee = (str) ->
 # Often helpful for things like binary operators.
 Node::left  = -> @children[0]
 Node::right = -> @children[1]
+
+Node::src = -> @tokenizer.source.substr(@start, @end-@start)
 
 # `unsupported()`  
 # Throws an unsupported error.
@@ -112,6 +115,55 @@ Types = (->
   dict
 )()
 
+trans = (node, args...) ->
+  if node.constructor == Node
+    fn = Translators[node.typeName()] or Translators.other
+    fn.apply(node, args)  if fn?
+
+  else if node.constructor == Array
+    _.each node, (c) -> trans c
+
+  else
+    node
+
+transSuper = (node, args...) -> Translators.other.apply node, args
+
+Translators =
+  'other': (aspects) ->
+    aspects ?= [
+      'iterator','object','condition','elsePart','body','setup','name',
+      'thenPart','statements','caseLabel','tryBlock','catchClauses','finallyBlock',
+      'expression', 'varName', 'initializer','children','varDecls','cases','params' ]
+
+    _.each aspects, (aspect) => trans this[aspect]  if this[aspect]
+
+    this
+
+  'script': ->
+    transSuper @
+
+    @functions    = []
+    @nonfunctions = []
+
+    _.each @children, (item) =>
+      if item.isA('function')
+        @functions.push item
+      else
+        @nonfunctions.push item
+
+  'case': ->
+    ch = @statements.children
+    if ch[ch.length-1].isA('break')
+      delete ch[ch.length-1]
+
+    transSuper @
+
+  'function': ->
+    @body.children[@body.children.length-1].last = true  if @body.children.length > 0
+    transSuper @
+
+Translators.block = Translators.script
+
 # ## The builders
 #
 # Each of these functions are apply'd to a Node, and is expected to return
@@ -125,23 +177,9 @@ Builders =
   'script': (opts={}) ->
     c = new Code
 
-    len = @children.length
-
-    if len > 0
-      # *Omit returns if not needed.*
-      if opts.returnable?
-        @children[len-1].last = true
-
-      # *CoffeeScript does not need `break` statements on `switch` blocks.*
-      if opts.noBreak? and @children[len-1].typeName() == 'break'
-        delete @children[len-1]
-
     # *Functions must always be declared first in a block.*
-    if @children?
-      _.each @children, (item) ->
-        c.add build(item)  if item.typeName() == 'function'
-      _.each @children, (item) ->
-        c.add build(item)  if item.typeName() != 'function'
+    _.each @functions, (item) -> c.add build(item)
+    _.each @nonfunctions, (item) -> c.add build(item)
 
     c.toString()
 
@@ -507,7 +545,7 @@ Builders =
       else
         c.scope "when #{build item.caseLabel}\n"
 
-      c.scope body(item.statements, noBreak: true), 2
+      c.scope body(item.statements), 2
 
       first = false
 
@@ -567,7 +605,7 @@ Builders =
     else
       c.add "->"
 
-    c.scope body(@body, returnable: true)
+    c.scope body(@body)
     c
 
   'var': ->
