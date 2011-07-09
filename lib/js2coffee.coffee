@@ -21,7 +21,7 @@ _ = @_ or require('underscore')
 
 {Code, p, strEscape, unreserve,
 unshift, isSingleLine,
-trim, blockTrim, ltrim,
+trim, blockTrim, ltrim, unParen,
 rtrim, strRepeat, paren} = @Js2coffeeHelpers or require('./helpers')
 
 # ## Main entry point
@@ -212,8 +212,16 @@ class Builder
   # All of these are rerouted to the `binary_operator` @builder.
 
   '+': (n) ->
-    s = (str) ->
-      if isStr(str) then str.substr(1, str.length-2) else "#\{#{str}\}"
+    s = (obj) ->
+      try
+        str = JSON.parse(unParen(obj))
+        if typeof(str) == 'string'
+          str = strEscape(str)
+          str.substr(1, str.length-2)
+        else
+          "#\{#{obj}}"
+      catch error
+        "#\{#{obj}}"
 
     isStr = (str) ->
       str.substr(0,1) == '"' and str.substr(-1) == '"'
@@ -222,7 +230,7 @@ class Builder
     right = @build(n.right())
 
     if isStr(left) or isStr(right)
-      strEscape("#{s left}#{s right}")
+      "\"#{s left}#{s right}\""
     else
       @binary_operator n, '+'
 

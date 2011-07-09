@@ -35,6 +35,12 @@ paren = (string) ->
     else
       "(#{str})"
 
+unParen = (string) ->
+  while string.substr(0,1) == '(' and string.substr(-1) == ')'
+    string = string.substr(1, string.length-2)
+
+  string
+
 # `strRepeat()`  
 # Repeats a string a certain number of times.
 # Example:
@@ -109,6 +115,6 @@ unreserve = (str) ->
 
 @Js2coffeeHelpers = exports =
   {Code, p, strEscape, unreserve, unshift, isSingleLine, trim,
-  blockTrim, ltrim, rtrim, strRepeat, paren}
+  blockTrim, ltrim, rtrim, strRepeat, paren, unParen}
 
 module.exports = exports  if module?
