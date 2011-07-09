@@ -211,7 +211,21 @@ class Builder
   # ### Binary operators
   # All of these are rerouted to the `binary_operator` @builder.
 
-  '+': (n) ->   @binary_operator n, '+'
+  '+': (n) ->
+    s = (str) ->
+      if isStr(str) then str.substr(1, str.length-2) else "#\{#{str}\}"
+
+    isStr = (str) ->
+      str.substr(0,1) == '"' and str.substr(-1) == '"'
+
+    left =  @build(n.left())
+    right = @build(n.right())
+
+    if isStr(left) or isStr(right)
+      strEscape("#{s left}#{s right}")
+    else
+      @binary_operator n, '+'
+
   '-': (n) ->   @binary_operator n, '-'
   '*': (n) ->   @binary_operator n, '*'
   '/': (n) ->   @binary_operator n, '/'
@@ -298,7 +312,7 @@ class Builder
       "/#{value}/#{flag}"
 
   'string': (n) ->
-    strEscape n.value
+    strEscape(n.value).replace(/#\{/g, '#\\{')
 
   # `call`  
   # A Function call.
