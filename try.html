@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Editor</title>
+  <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    #editor-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: white;
+    }
+
+    #editor1 {
+      left: 0;
+      right: 50%;
+    }
+    #editor2 {
+      left: 50%;
+      right: 0;
+    }
+    .editor {
+      position: absolute !important;
+      background: white;
+      bottom: 0;
+      top: 0;
+    }
+    #infobox {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40%;
+      background: #fdd;
+    }
+  </style>
+</head>
+<body>
+
+<div id="editor-wrapper">
+  <pre id="editor1" class="editor">/**
+ * Multiline Documentation
+ */
+
+var foobar = function(callback) {
+    setTimeout(function() {
+        // trigger callback after 1000ms
+        callback();
+    }, 1000);
+};
+
+var foo = {
+    key: {
+      nestedKey: 'value'
+    },
+    array: [1],
+    nestedArray: [1, 2, ['2a', ['2a-I']]]
+}
+
+foobar(function() {
+    alert(foo.array);
+});</pre>
+  <pre id="editor2" class="editor">###
+Multiline Documentation
+###
+foobar = (callback) ->
+  setTimeout (->
+
+    # trigger callback after 1000ms
+    callback()
+  ), 1000
+
+foo =
+  key:
+    nestedKey: "value"
+
+  array: [1]
+  nestedArray: [
+    1
+    2
+    [
+      "2a"
+      ["2a-I"]
+    ]
+  ]
+
+foobar ->
+  alert foo.array</pre>
+</div>
+<div id="infobox"></div>
+
+<script src="alpha/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="alpha/bundle-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="alpha/token_tooltip.js" type="text/javascript" charset="utf-8"></script>
+<script>
+  var js2coffeeOptions = {};
+  if (window.location.href.indexOf("show_src_lineno") !== -1) {
+    js2coffeeOptions.show_src_lineno = true;
+  }
+  var TokenTooltip = ace.require("kitchen-sink/token_tooltip").TokenTooltip;
+
+  var editor1 = ace.edit("editor1");
+  editor1.getSession().setMode("ace/mode/javascript");
+  editor1.on('change', function(event, editor) {
+    schedule();
+  });
+  editor1.commands.addCommand({
+    name: 'execute',
+    bindKey: "ctrl+enter",
+    exec: function(editor) {
+        var r;
+        try {
+            var r = window.eval(editor.getCopyText()||editor.getValue());
+        } catch(e) {
+            r = e;
+        }
+        console.dir(r);
+    },
+    readOnly: true
+  });
+
+  var editor2 = ace.edit("editor2");
+  editor2.getSession().setMode("ace/mode/coffee");
+
+  var job = null;
+  var schedule = function() {
+    if (job != null) {
+      clearTimeout(job);
+    }
+    return job = setTimeout(compileToCoffee, 200);
+  };
+
+  var compileToCoffee = function() {
+    //TODO: check if JS is valid before compile to coffee
+    try {
+      var input = editor1.getSession().getDocument().getValue();
+      var coffeeOutput = js2coffee.build(input, js2coffeeOptions);
+      editor2.getSession().getDocument().setValue(coffeeOutput);
+      document.querySelector("#infobox").innerText = ""
+      document.querySelector("#infobox").style.padding = "0";
+    } catch (err) {
+      //console.error(err.message);
+      //console.error(err.stack);
+
+      document.querySelector("#infobox").innerText = err.message;
+      document.querySelector("#infobox").style.padding = "5px";
+    }
+  };
+
+  var enableOptions = function (editors) {
+    for (var i=0; i < editors.length; i++) {
+      var editor = editors[i];
+      editor.setTheme("ace/theme/textmate");
+      editor.tokenTooltip = new TokenTooltip(editor);
+      editor.setShowInvisibles(false);
+      editor.renderer.setShowGutter(true);
+      editor.renderer.setShowPrintMargin(true);
+    }
+  };
+
+  enableOptions([editor1, editor2]);
+  editor2.setHighlightActiveLine(false);
+
+  console.log("js2coffee v. "+js2coffee.VERSION);
+  compileToCoffee();
+</script>
+</body>
+</html>
