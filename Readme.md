@@ -9,7 +9,12 @@ You can preview the latest Js2coffee version on this site:
 [rstacruz.github.io/js2coffee/try.html](http://rstacruz.github.io/js2coffee/try.html)
 
 Features:
+
+* Line numbers for both editors
 * JavaScript Syntax Check
-* Append `#show_src_lineno` to URL and refresh for original line numbers
-* Run JavaScript with `CTRL + ENTER`
- * Use Browser Console to view console.log statements
+* Token Tooltips for JavaScript and CoffeeScript on MouseOver
+* Append `#show_src_lineno` to URL and refresh the page for original line numbers
+* Run your JavaScript code with `CTRL + ENTER`
+  * Use Browser Console to view console.log statements
+
+ Thanks to [Ajax.org](https://github.com/ajaxorg/ace/)
