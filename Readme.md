@@ -8,6 +8,8 @@ Currently the repository [github.com/rstacruz/js2coffee.org](https://github.com/
 You can preview the latest Js2coffee version on this site:
 [rstacruz.github.io/js2coffee/try.html](http://rstacruz.github.io/js2coffee/try.html)
 
+It's still in progress and converts only from js to coffee.
+
 Features:
 
 * Line numbers for both editors
