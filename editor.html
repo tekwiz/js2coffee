@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>js2coffee editor</title>
+  <link rel="stylesheet" type="text/css" href="editor.css">
+</head>
+<body>
+
+<div id="editor-wrapper">
+  <pre id="editor1" class="editor">/**
+ * Multiline Documentation
+ */
+
+var foobar = function(callback) {
+    setTimeout(function() {
+        // trigger callback after 1000ms
+        callback();
+    }, 1000);
+};
+
+var foo = {
+    key: {
+      nestedKey: 'value'
+    },
+    array: [1],
+    nestedArray: [1, 2, ['2a', ['2a-I']]]
+}
+
+foobar(function() {
+    alert(foo.array);
+});</pre>
+  <pre id="editor2" class="editor">###
+Multiline Documentation
+###
+foobar = (callback) ->
+  setTimeout (->
+
+    # trigger callback after 1000ms
+    callback()
+  ), 1000
+
+foo =
+  key:
+    nestedKey: "value"
+
+  array: [1]
+  nestedArray: [
+    1
+    2
+    [
+      "2a"
+      ["2a-I"]
+    ]
+  ]
+
+foobar ->
+  alert foo.array</pre>
+</div>
+<div id="infobox">
+  <div class="infobox-content"></div>
+  <div class="arrow-wrapper">
+    <div class="arrow-down"></div>
+  </div>
+</div>
+
+<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="browser-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="ace/token_tooltip.js" type="text/javascript" charset="utf-8"></script>
+<script>
+  var js2coffeeOptions = {}
+  js2coffeeOptions.show_src_lineno = false;
+  
+  var TokenTooltip = ace.require("kitchen-sink/token_tooltip").TokenTooltip;
+
+  var editor1 = ace.edit("editor1");
+  editor1.getSession().setMode("ace/mode/javascript");
+  
+  editor1.on('change', function(event, editor) {
+    schedule();
+  });
+  editor1.commands.addCommand({
+    name: 'execute',
+    bindKey: "ctrl+enter",
+    exec: function(editor) {
+        var r;
+        try {
+            var r = window.eval(editor.getCopyText()||editor.getValue());
+        } catch(e) {
+            r = e;
+        }
+        console.dir(r);
+    },
+    readOnly: true
+  });
+
+  var editor2 = ace.edit("editor2");
+  editor2.getSession().setMode("ace/mode/coffee");
+
+  var job = null;
+  var schedule = function() {
+    if (job != null) {
+      clearTimeout(job);
+    }
+    return job = setTimeout(compileToCoffee, 200);
+  };
+
+  var compileToCoffee = function() {
+    //TODO: check if JS is valid before compile to coffee
+    try {
+      var input = editor1.getSession().getDocument().getValue();
+      var coffeeOutput = js2coffee.build(input, js2coffeeOptions);
+      editor2.getSession().getDocument().setValue(coffeeOutput);
+      document.querySelector(".infobox-content").innerText = ""
+      document.querySelector("#infobox").style.display = "none";
+    } catch (err) {
+      //console.error(err.message);
+      //console.error(err.stack);
+      document.querySelector(".infobox-content").innerText = err.message;
+      document.querySelector("#infobox").style.display = "block";
+    }
+  };
+
+  var enableOptions = function (editors) {
+    for (var i=0; i < editors.length; i++) {
+      var editor = editors[i];
+      editor.setTheme("ace/theme/monokai");
+      editor.tokenTooltip = new TokenTooltip(editor);
+      editor.setShowInvisibles(true);
+      editor.renderer.setShowGutter(true);
+      editor.renderer.setShowPrintMargin(false);
+    }
+  };
+
+  var disableToolTips = function() {
+    tooltip1 = editor1.tokenTooltip;
+    tooltip2 = editor2.tokenTooltip;
+    tooltip1.destroy();
+    tooltip2.destroy();
+  }
+
+  var enableToolTips = function() {
+    editor1.tokenTooltip = new TokenTooltip(editor1);
+    editor2.tokenTooltip = new TokenTooltip(editor2);
+  }
+
+  enableOptions([editor1, editor2]);
+  editor2.setHighlightActiveLine(false);
+
+  compileToCoffee();
+
+</script>
+</body>
+</html>
