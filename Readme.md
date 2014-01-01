@@ -1,22 +1,24 @@
-# Js2coffee website
+# Try out Js2coffee in the browser
 
 ## js2coffee.org
-Currently the repository [github.com/rstacruz/js2coffee.org](https://github.com/rstacruz/js2coffee.org) and its website are not in sync with the master branch and the npm registry of [this](https://github.com/rstacruz/js2coffee) repository.
+Currently the repository [github.com/rstacruz/js2coffee.org](https://github.com/rstacruz/js2coffee.org) and its website are not in sync with the master branch and the npm registry of this repository [github.com/rstacruz/js2coffee](https://github.com/rstacruz/js2coffee). The website js2coffee.org uses an old version of Js2coffee. This will be fixed soon.
 
-## Latest preview
+## Latest version
 
 You can preview the latest Js2coffee version on this site:
 [rstacruz.github.io/js2coffee/try.html](http://rstacruz.github.io/js2coffee/try.html)
 
-It's still in progress and converts only from js to coffee.
+The new online editor has some improvements:
 
-Features:
+- Line Numbers
+- Syntax Check for JavaScript and CoffeeScript
+- Token Tooltips
+- Execution of the JavaScript source
 
-* Line numbers for both editors
-* JavaScript Syntax Check
-* Token Tooltips for JavaScript and CoffeeScript on MouseOver
-* Append `#show_src_lineno` to URL and refresh the page for original line numbers
-* Run your JavaScript code with `CTRL + ENTER`
-  * Use Browser Console to view console.log statements
+The website uses the [ace](https://github.com/ajaxorg/ace/) editor, which has some
+[known issues for mobile/touch devices](https://github.com/ajaxorg/ace/issues?labels=mobile&page=1&state=open):
+
+- scrolling don't work for touch devices
+- iOS devices should use the [iframe](http://rstacruz.github.io/js2coffee/editor.html) when using in write mode
 
  Thanks to [Ajax.org](https://github.com/ajaxorg/ace/)
