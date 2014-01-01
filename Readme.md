@@ -19,6 +19,6 @@ The website uses the [ace](https://github.com/ajaxorg/ace/) editor, which has so
 [known issues for mobile/touch devices](https://github.com/ajaxorg/ace/issues?labels=mobile&page=1&state=open):
 
 - scrolling don't work for touch devices
-- iOS devices should use the [iframe](http://rstacruz.github.io/js2coffee/editor.html) when using in write mode
+- iOS devices should use the [iframe](http://rstacruz.github.io/js2coffee/editor.html) when using write mode
 
  Thanks to [Ajax.org](https://github.com/ajaxorg/ace/)
