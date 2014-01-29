@@ -12,8 +12,8 @@
     <section id="info">
         <div id="version">Js2coffee</div>
         <p class="more-info" style="margin: -2px 0 0 0;">
-            <a title="CoffeeScript → JS comming soon">JS → CoffeeScript</a>
-            <a href="#coffee2js" style="display:none" >JS ← CoffeeScript</a>
+            <a id="js2coffee" href="#" title="switch to JS ← CoffeeScript">JS → CoffeeScript</a>
+            <a id="coffee2js" href="#" title="switch to JS → CoffeeScript" style="display:none" >JS ← CoffeeScript</a>
         </p>
 
         <iframe id="editorFrame" src="editor.html"></iframe>
@@ -43,10 +43,12 @@ $ js2coffee file.js &gt; file.coffee</code>
     </section>
     <div id="overlay">
         <a href="#" class="close">&times;</a>
-        
+        <h3>Options</h3>
+            <p>At the top in the center you can swich between <br><strong>JS → CoffeeScript</strong> and <strong>CoffeeScript → JS</strong></p>
+
         <h3>Options</h3>
             <input type="checkbox" checked="checked" name="token_highlight"/> Highlight Tokens
-            <br><input type="checkbox" name="line_numbers" /> Show Original Line Numbers
+            <br><input type="checkbox" name="line_numbers" /> Show Original Line Numbers (js2coffee)
             <br><input type="checkbox" checked="checked" class="editor" name="ShowInvisibles"/> Show Invisibles
             <br><input type="checkbox" checked="checked" class="editor renderer" name="ShowGutter"/> Show Gutter
             <br><input type="checkbox" class="editor renderer" name="ShowPrintMargin"/> Show Print Gutter
@@ -54,16 +56,33 @@ $ js2coffee file.js &gt; file.coffee</code>
         <h3>Shortcuts</h3>
             <ul>
                 <li><strong>Ctrl + ENTER </strong> - execuate JS code</li>
+                <li><strong>Cmd/Ctrl + Shift + 7 </strong> - (un)comment JS blocks </li>
                 <li><strong>Cmd/Ctrl + L </strong> - jump to line </li>
             </ul>
         <h3>Hints</h3>
-            <p>When using the console, ensure to use the <strong>editor.html</strong> frame.</p>
+            <p>When using the browser console, ensure to use the <strong>editor.html</strong> frame.</p>
     
     </div>
     <div id="mask" onclick="document.location='#';"></div>
 
     <script>
         window.onload =  function() {
+
+            // switch js and coffee mode
+            document.querySelector('#js2coffee').addEventListener('click', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                editorFrame.contentWindow.toggleMode();
+                document.querySelector('#js2coffee').style.display = 'none';
+                document.querySelector('#coffee2js').style.display = 'inline-block';
+            });
+            document.querySelector('#coffee2js').addEventListener('click', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                editorFrame.contentWindow.toggleMode();
+                document.querySelector('#coffee2js').style.display = 'none';
+                document.querySelector('#js2coffee').style.display = 'inline-block';
+            });
+
+            // Tooltips
             document.querySelector('#overlay input[name="token_highlight"]').addEventListener('click', function(e){
                 var editorFrame = document.querySelector("#editorFrame");
                 var value = e.target.checked;
@@ -74,12 +93,16 @@ $ js2coffee file.js &gt; file.coffee</code>
                     editorFrame.contentWindow.disableToolTips();
                 }
             });
+
+            // Line numbers
             document.querySelector('#overlay input[name="line_numbers"]').addEventListener('click', function(e){
                 var editorFrame = document.querySelector("#editorFrame");
                 var value = e.target.checked;
                 editorFrame.contentWindow.js2coffeeOptions.show_src_lineno = value;
                 editorFrame.contentWindow.compileToCoffee();
             });
+
+            // 
             var toggleEditorSettings = function(e) {
                 var editorFrame = document.querySelector("#editorFrame");
                 var value = e.target.checked;

@@ -67,6 +67,8 @@ foobar ->
 
 <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="browser-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="coffee-script.js" type="text/javascript" charset="utf-8"></script>
+
 <script src="ace/token_tooltip.js" type="text/javascript" charset="utf-8"></script>
 <script>
   var js2coffeeOptions = {}
@@ -77,9 +79,7 @@ foobar ->
   var editor1 = ace.edit("editor1");
   editor1.getSession().setMode("ace/mode/javascript");
   
-  editor1.on('change', function(event, editor) {
-    schedule();
-  });
+
   editor1.commands.addCommand({
     name: 'execute',
     bindKey: "ctrl+enter",
@@ -98,13 +98,60 @@ foobar ->
   var editor2 = ace.edit("editor2");
   editor2.getSession().setMode("ace/mode/coffee");
 
+
+  var editMode = editor1;
+  var toggleMode = function() {
+    if (editMode === editor1) {
+      editMode = editor2;
+    } else if (editMode === editor2) {
+      editMode = editor1;
+    }
+    schedule();
+  }
+
+  editor1.on('change', function(event, editor) {
+    if (editMode === editor1) {
+      schedule();
+    }
+  });
+
+  editor2.on('change', function(event, editor) {
+    if (editMode === editor2) {
+      schedule();
+    }
+  });
+
+
   var job = null;
   var schedule = function() {
     if (job != null) {
       clearTimeout(job);
     }
-    return job = setTimeout(compileToCoffee, 200);
+    return job = setTimeout(doCompile, 200);
   };
+
+  var doCompile = function() {
+    if (editMode === editor1) {
+      compileToCoffee();
+    } else {
+      compileToJavaScript();
+    }
+  }
+
+  var compileToJavaScript = function() {
+    try {
+      var input = editor2.getSession().getDocument().getValue();
+      var jsOutput = CoffeeScript.compile(input, {bare: true});
+      editor1.getSession().getDocument().setValue(jsOutput);
+      document.querySelector(".infobox-content").innerText = ""
+      document.querySelector("#infobox").style.display = "none";
+    } catch (err) {
+      //console.error(err.message);
+      //console.error(err.stack);
+      document.querySelector(".infobox-content").innerText = err.message;
+      document.querySelector("#infobox").style.display = "block";
+    }
+  }
 
   var compileToCoffee = function() {
     //TODO: check if JS is valid before compile to coffee
