@@ -6,7 +6,7 @@ Currently the repository [github.com/rstacruz/js2coffee.org](https://github.com/
 ## Latest version
 
 You can preview the latest Js2coffee version on this site:
-[rstacruz.github.io/js2coffee/try.html](http://rstacruz.github.io/js2coffee/try.html)
+[rstacruz.github.io/js2coffee](http://rstacruz.github.io/js2coffee)
 
 The new online editor has some improvements:
 

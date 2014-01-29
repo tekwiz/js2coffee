@@ -1,23 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Js2coffee: convert JavaScript code to CoffeeScript</title>
-<meta charset='UTF-8' />
-<meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible' />
-<meta content='width=device-width, initial-scale=1.0' name='viewport' />
-<meta http-equiv='refresh' content='0; http://js2coffee.org' />
-<style>
-    body { font-family: sans-serif; line-height: 1.6; font-size: 12pt; }
-    p { margin: 100px auto; width: 300px; text-align: center; color: #aaa; }
-    strong { font-weight: bold; font-size: 1.1em; color: #444; }
-    a { color: #383; font-weight: bold; text-decoration: none; }
-</style>
+    <title>Js2coffee: convert JavaScript code to CoffeeScript</title>
+    <meta charset='UTF-8' />
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible' />
+    <meta content='width=device-width, initial-scale=1.0' name='viewport' />
+    <link rel="stylesheet" type="text/css" href="style.css">
+
 </head>
 <body>
-    <p>
-    <strong>The new URL is <a href="http://js2coffee.org">Js2coffee.org</a>.</strong>
-    Please update your bookmarks. You will be redirected there now.
-    </p>
-    <script type='text/javascript'>window.location.href = "http://js2coffee.org";</script>
+    <section id="info">
+        <div id="version">Js2coffee</div>
+        <p class="more-info" style="margin: -2px 0 0 0;">
+            <a id="js2coffee" href="#" title="switch to JS ← CoffeeScript">JS → CoffeeScript</a>
+            <a id="coffee2js" href="#" title="switch to JS → CoffeeScript" style="display:none" >JS ← CoffeeScript</a>
+        </p>
+
+        <iframe id="editorFrame" src="editor.html"></iframe>
+        
+        <p class="more-info">
+            <a href="#overlay" id="open-overlay">Editor ↑</a>
+            <a href="#information">About ↓</a>
+        </p>
+        <h1 id="information">The JavaScript to CoffeeScript compiler</h1>
+        <h2>Js2coffee helps you migrate project to CoffeeScript</h2>
+        <div class="logo">
+            <img src="images/logo.gif">
+        </div>
+        <article>
+            <div class="c">
+                <h3>Information</h3>
+                <p>Js2coffee helps you migrate projects to <a href="http://www.coffeescript.org">CoffeeScript</a> by compiling your JavaScript code into CoffeeScript.</p><p>Js2coffee is a project of <a href="http://ricostacruz.com">Rico Sta Cruz</a>. The source code is available over at <a href="http://github.com/rstacruz/js2coffee">GitHub</a>.</p>
+
+                <h3 id="local_usage">Local usage</h3><p>Js2coffee is also available as a NodeJS module.</p>
+                <pre><code>$ npm install js2coffee
+$ js2coffee file.js &gt; file.coffee</code>
+                </pre>
+
+                <h3 id="reporting_issues">Reporting issues</h3><p>Please report any issues you find over to the <a href="http://github.com/rstacruz/js2coffee/issues">Js2coffee issue tracker</a>. Read the 
+                <a href="https://github.com/rstacruz/js2coffee/blob/master/CONTRIBUTING.md">contribution guide</a> before reporting issues.</p></div>
+        </article>
+    </section>
+    <div id="overlay">
+        <a href="#" class="close">&times;</a>
+        <h3>Options</h3>
+            <p>At the top in the center you can swich between <br><strong>JS → CoffeeScript</strong> and <strong>CoffeeScript → JS</strong></p>
+
+        <h3>Options</h3>
+            <input type="checkbox" checked="checked" name="token_highlight"/> Highlight Tokens
+            <br><input type="checkbox" name="line_numbers" /> Show Original Line Numbers (js2coffee)
+            <br><input type="checkbox" checked="checked" class="editor" name="ShowInvisibles"/> Show Invisibles
+            <br><input type="checkbox" checked="checked" class="editor renderer" name="ShowGutter"/> Show Gutter
+            <br><input type="checkbox" class="editor renderer" name="ShowPrintMargin"/> Show Print Gutter
+            
+        <h3>Shortcuts</h3>
+            <ul>
+                <li><strong>Ctrl + ENTER </strong> - execuate JS code</li>
+                <li><strong>Cmd/Ctrl + Shift + 7 </strong> - (un)comment JS blocks </li>
+                <li><strong>Cmd/Ctrl + L </strong> - jump to line </li>
+            </ul>
+        <h3>Hints</h3>
+            <p>When using the browser console, ensure to use the <strong>editor.html</strong> frame.</p>
+    
+    </div>
+    <div id="mask" onclick="document.location='#';"></div>
+
+    <script>
+        window.onload =  function() {
+
+            // switch js and coffee mode
+            document.querySelector('#js2coffee').addEventListener('click', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                editorFrame.contentWindow.toggleMode();
+                document.querySelector('#js2coffee').style.display = 'none';
+                document.querySelector('#coffee2js').style.display = 'inline-block';
+            });
+            document.querySelector('#coffee2js').addEventListener('click', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                editorFrame.contentWindow.toggleMode();
+                document.querySelector('#coffee2js').style.display = 'none';
+                document.querySelector('#js2coffee').style.display = 'inline-block';
+            });
+
+            // Tooltips
+            document.querySelector('#overlay input[name="token_highlight"]').addEventListener('click', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                var value = e.target.checked;
+                if (value === true) {
+                    editorFrame.contentWindow.enableToolTips();
+                }
+                if (value === false) {
+                    editorFrame.contentWindow.disableToolTips();
+                }
+            });
+
+            // Line numbers
+            document.querySelector('#overlay input[name="line_numbers"]').addEventListener('click', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                var value = e.target.checked;
+                editorFrame.contentWindow.js2coffeeOptions.show_src_lineno = value;
+                editorFrame.contentWindow.compileToCoffee();
+            });
+
+            // 
+            var toggleEditorSettings = function(e) {
+                var editorFrame = document.querySelector("#editorFrame");
+                var value = e.target.checked;
+                var name = e.target.name;
+                if (e.target.className.indexOf("renderer") >= 0) {
+                    editorFrame.contentWindow.editor1.renderer['set'+name](value);
+                    editorFrame.contentWindow.editor2.renderer['set'+name](value);
+                } else {
+                    editorFrame.contentWindow.editor1['set'+name](value);
+                    editorFrame.contentWindow.editor2['set'+name](value);
+                }
+            }
+            var inputs = document.querySelectorAll('#overlay input.editor');
+            for (var i=0; i<inputs.length; i++) {
+                inputs[i].addEventListener('click', toggleEditorSettings);
+            }
+            var injectVersion = function() {
+                var editorFrame = document.querySelector("#editorFrame");
+                var js2coffee = editorFrame.contentWindow.js2coffee;
+                if (js2coffee != null) {
+                    document.querySelector("#version").innerText = "Js2coffee v. "+js2coffee.VERSION;
+                } else {
+                    // schedule if iframe not ready yet
+                    setTimeout(injectVersion, 100);
+                }
+            }
+            injectVersion();
+        }
+    </script>
 </body>
-</html>
+
