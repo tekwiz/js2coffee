@@ -6,13 +6,19 @@ iframe {
 * {
     font-family: Verdana;
 }
-#version {
+.version {
     padding-top: 25px;
     color: #aaaaaa;
     font-size: 9pt;
-    left: 2.5%;
     position: absolute;
 }
+.version.left {
+    left: 2.5%;
+}
+.version.right {
+    right: 2.5%;
+}
+
 #info {
     background: #4d362d url(images/bg-brown.jpg);
     margin: 0 0 0 0;

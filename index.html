@@ -10,7 +10,8 @@
 </head>
 <body>
     <section id="info">
-        <div id="version">Js2coffee</div>
+        <div class="version left" id="js2coffee-version">Js2coffee</div>
+        <div class="version right" id="coffeescript-version" style="display:none">CoffeeScript</div>
         <p class="more-info" style="margin: -2px 0 0 0;">
             <a id="js2coffee" href="#" title="switch to JS ← CoffeeScript">JS → CoffeeScript</a>
             <a id="coffee2js" href="#" title="switch to JS → CoffeeScript" style="display:none" >JS ← CoffeeScript</a>
@@ -74,12 +75,18 @@ $ js2coffee file.js &gt; file.coffee</code>
                 editorFrame.contentWindow.toggleMode();
                 document.querySelector('#js2coffee').style.display = 'none';
                 document.querySelector('#coffee2js').style.display = 'inline-block';
+
+                document.querySelector('#js2coffee-version').style.display = 'none';
+                document.querySelector('#coffeescript-version').style.display = 'block';
             });
             document.querySelector('#coffee2js').addEventListener('click', function(e){
                 var editorFrame = document.querySelector("#editorFrame");
                 editorFrame.contentWindow.toggleMode();
                 document.querySelector('#coffee2js').style.display = 'none';
                 document.querySelector('#js2coffee').style.display = 'inline-block';
+
+                document.querySelector('#coffeescript-version').style.display = 'none';
+                document.querySelector('#js2coffee-version').style.display = 'block';
             });
 
             // Tooltips
@@ -121,9 +128,12 @@ $ js2coffee file.js &gt; file.coffee</code>
             }
             var injectVersion = function() {
                 var editorFrame = document.querySelector("#editorFrame");
-                var js2coffee = editorFrame.contentWindow.js2coffee;
+                var js2coffeeVersion = editorFrame.contentWindow.js2coffee.VERSION;
+                var coffeeVersion = editorFrame.contentWindow.CoffeeScript.VERSION;
                 if (js2coffee != null) {
-                    document.querySelector("#version").innerText = "Js2coffee v. "+js2coffee.VERSION;
+                    document.querySelector("#js2coffee-version").innerText = "Js2coffee v. "+js2coffeeVersion;
+                     document.querySelector("#coffeescript-version").innerText = "CoffeeScript v. "+coffeeVersion;
+                    
                 } else {
                     // schedule if iframe not ready yet
                     setTimeout(injectVersion, 100);
