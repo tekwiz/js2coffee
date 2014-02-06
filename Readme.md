@@ -1,12 +1,7 @@
 # Try out Js2coffee in the browser
+[js2coffee.org](http://js2coffee.org)  
 
-## js2coffee.org
-Currently the repository [github.com/rstacruz/js2coffee.org](https://github.com/rstacruz/js2coffee.org) and its website are not in sync with the master branch and the npm registry of this repository [github.com/rstacruz/js2coffee](https://github.com/rstacruz/js2coffee). The website js2coffee.org uses an old version of Js2coffee. This will be fixed soon.
-
-## Latest version
-
-You can preview the latest Js2coffee version on this site:
-[rstacruz.github.io/js2coffee](http://rstacruz.github.io/js2coffee)
+You can swtich the mode (JS -> Coffee and Coffee -> JS) at the top in the center.
 
 The new online editor has some improvements:
 
