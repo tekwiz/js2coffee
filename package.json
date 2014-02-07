@@ -1,0 +1,26 @@
+{
+  "name": "gh-pages",
+  "version": "0.0.0",
+  "description": "js2coffee online editor",
+  "main": "index.js",
+  "dependencies": {
+    "express": "~3.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rstacruz/js2coffee.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "CoffeeScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rstacruz/js2coffee/issues"
+  }
+}
