@@ -119,12 +119,12 @@ $ js2coffee file.js &gt; file.coffee</code>
             }
             var injectVersion = function() {
                 var editorFrame = document.querySelector("#editorFrame");
-                var js2coffeeVersion = editorFrame.contentWindow.js2coffee.VERSION;
-                var coffeeVersion = editorFrame.contentWindow.CoffeeScript.VERSION;
-                if (js2coffee != null) {
+                
+                if (editorFrame !== null && editorFrame.contentWindow.js2coffee !== null) {
+                    var js2coffeeVersion = editorFrame.contentWindow.js2coffee.VERSION;
+                    var coffeeVersion = editorFrame.contentWindow.CoffeeScript.VERSION;
                     document.querySelector("#js2coffee-version").innerText = "Js2coffee v. "+js2coffeeVersion;
-                     document.querySelector("#coffeescript-version").innerText = "CoffeeScript v. "+coffeeVersion;
-                    
+                    document.querySelector("#coffeescript-version").innerText = "CoffeeScript v. "+coffeeVersion;
                 } else {
                     // schedule if iframe not ready yet
                     setTimeout(injectVersion, 100);
