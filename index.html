@@ -11,11 +11,7 @@
 <body>
     <section id="info">
         <div class="version left" id="js2coffee-version">Js2coffee</div>
-        <div class="version right" id="coffeescript-version" style="display:none">CoffeeScript</div>
-        <p class="more-info" style="margin: -2px 0 0 0;">
-            <a id="js2coffee" href="#" title="switch to JS ← CoffeeScript">JS → CoffeeScript</a>
-            <a id="coffee2js" href="#" title="switch to JS → CoffeeScript" style="display:none" >JS ← CoffeeScript</a>
-        </p>
+        <div class="version right" id="coffeescript-version">CoffeeScript</div>
 
         <iframe id="editorFrame" src="editor.html"></iframe>
         
@@ -44,12 +40,19 @@ $ js2coffee file.js &gt; file.coffee</code>
     </section>
     <div id="overlay">
         <a href="#" class="close">&times;</a>
-        <h3>Options</h3>
-            <p>At the top in the center you can swich between <br><strong>JS → CoffeeScript</strong> and <strong>CoffeeScript → JS</strong></p>
+            <p>You can switch between <br><strong>JS → CoffeeScript</strong> and <strong>CoffeeScript → JS</strong><br>
+            Just focus the editor and start typing.</p>
 
         <h3>Options</h3>
-            <input type="checkbox" checked="checked" name="token_highlight"/> Highlight Tokens
+            <select type="text" name="js2coffee_indent"> 
+                <option value="  ">2 whitespaces</option>
+                <option value="    ">4 whitespaces</option>
+                <option value="&#09;">1 tab</option>
+            </select> Js2coffee indent 
             <br><input type="checkbox" name="line_numbers" /> Show Original Line Numbers (js2coffee)
+            
+            <br><input type="checkbox" checked="checked" name="token_highlight"/> Highlight Tokens
+            
             <br><input type="checkbox" checked="checked" class="editor" name="ShowInvisibles"/> Show Invisibles
             <br><input type="checkbox" checked="checked" class="editor renderer" name="ShowGutter"/> Show Gutter
             <br><input type="checkbox" class="editor renderer" name="ShowPrintMargin"/> Show Print Gutter
@@ -69,26 +72,6 @@ $ js2coffee file.js &gt; file.coffee</code>
     <script>
         window.onload =  function() {
 
-            // switch js and coffee mode
-            document.querySelector('#js2coffee').addEventListener('click', function(e){
-                var editorFrame = document.querySelector("#editorFrame");
-                editorFrame.contentWindow.toggleMode();
-                document.querySelector('#js2coffee').style.display = 'none';
-                document.querySelector('#coffee2js').style.display = 'inline-block';
-
-                document.querySelector('#js2coffee-version').style.display = 'none';
-                document.querySelector('#coffeescript-version').style.display = 'block';
-            });
-            document.querySelector('#coffee2js').addEventListener('click', function(e){
-                var editorFrame = document.querySelector("#editorFrame");
-                editorFrame.contentWindow.toggleMode();
-                document.querySelector('#coffee2js').style.display = 'none';
-                document.querySelector('#js2coffee').style.display = 'inline-block';
-
-                document.querySelector('#coffeescript-version').style.display = 'none';
-                document.querySelector('#js2coffee-version').style.display = 'block';
-            });
-
             // Tooltips
             document.querySelector('#overlay input[name="token_highlight"]').addEventListener('click', function(e){
                 var editorFrame = document.querySelector("#editorFrame");
@@ -101,12 +84,19 @@ $ js2coffee file.js &gt; file.coffee</code>
                 }
             });
 
-            // Line numbers
+            // js2coffee line numbers
             document.querySelector('#overlay input[name="line_numbers"]').addEventListener('click', function(e){
                 var editorFrame = document.querySelector("#editorFrame");
                 var value = e.target.checked;
                 editorFrame.contentWindow.js2coffeeOptions.show_src_lineno = value;
-                editorFrame.contentWindow.compileToCoffee();
+                // editorFrame.contentWindow.compileToCoffee();
+            });
+            // js2coffee indent
+            document.querySelector('#overlay select[name="js2coffee_indent"]').addEventListener('change', function(e){
+                var editorFrame = document.querySelector("#editorFrame");
+                var value = e.target.value;
+                editorFrame.contentWindow.js2coffeeOptions.indent = value;
+                // editorFrame.contentWindow.compileToCoffee();
             });
 
             // 

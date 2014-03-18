@@ -110,13 +110,17 @@ foobar ->
   }
 
   editor1.on('change', function(event, editor) {
-    if (editMode === editor1) {
+    var focused = document.activeElement.parentElement;
+    if (focused === editor1.container) {
+      editMode = editor1;
       schedule();
     }
   });
 
   editor2.on('change', function(event, editor) {
-    if (editMode === editor2) {
+    var focused = document.activeElement.parentElement;
+    if (focused === editor2.container) {
+      editMode = editor2;
       schedule();
     }
   });
